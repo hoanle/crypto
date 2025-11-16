@@ -1,0 +1,144 @@
+Unit Test Suite for Crypto App
+Run with ./gradlew test 
+
+Test Case 1: GetAllCryptosUseCaseTest
+- Tests GetAllCryptosUseCase use case implementation
+- Test 1: "invoke returns flow of cryptos from repository" - Verifies that invoking the use case returns a Flow containing the list of cryptos from the repository
+- Test 2: "invoke returns empty list when repository returns empty list" - Verifies that the use case correctly handles empty repository results
+- Verifies proper delegation to CryptoRepository.getAllCryptos()
+- Uses MockK for mocking CryptoRepository and Turbine for Flow testing
+- Total: 2 test methods
+
+Test Case 2: GetAllFiatsUseCaseTest
+- Tests GetAllFiatsUseCase use case implementation
+- Test 1: "invoke returns flow of fiats from repository" - Verifies that invoking the use case returns a Flow containing the list of fiats from the repository
+- Test 2: "invoke returns empty list when repository returns empty list" - Verifies that the use case correctly handles empty repository results
+- Verifies proper delegation to FiatRepository.getAllFiats()
+- Uses MockK for mocking FiatRepository and Turbine for Flow testing
+- Total: 2 test methods
+
+Test Case 3: CryptoRepositoryImplTest
+- Tests CryptoRepositoryImpl repository implementation
+- Test 1: "getAllCryptos returns flow of domain cryptos" - Verifies that getAllCryptos() returns a Flow of domain models converted from entities
+- Test 2: "searchCryptos returns flow of filtered domain cryptos" - Verifies search functionality returns filtered results
+- Test 3: "getCryptoById returns domain crypto when found" - Verifies retrieval by ID returns correct domain model with proper field mapping (id, name, symbol, code=null)
+- Test 4: "getCryptoById returns null when not found" - Verifies null handling for non-existent IDs
+- Test 5: "insertCrypto converts domain to entity and calls dao" - Verifies domain-to-entity conversion and DAO invocation
+- Test 6: "updateCrypto converts domain to entity and calls dao" - Verifies update operation with conversion
+- Test 7: "deleteCrypto converts domain to entity and calls dao" - Verifies delete operation with conversion
+- Test 8: "clearAllCryptos calls dao" - Verifies clear operation delegates to DAO
+- Verifies entity-to-domain model conversion (toDomain()) and domain-to-entity conversion (toCryptoEntity())
+- Uses MockK for mocking CryptoDao and Turbine for Flow testing
+- Total: 8 test methods
+
+Test Case 4: FiatRepositoryImplTest
+- Tests FiatRepositoryImpl repository implementation
+- Test 1: "getAllFiats returns flow of domain fiats" - Verifies that getAllFiats() returns a Flow of domain models converted from entities with proper field mapping (id, name, symbol, code)
+- Test 2: "searchFiats returns flow of filtered domain fiats" - Verifies search functionality returns filtered results
+- Test 3: "getFiatById returns domain fiat when found" - Verifies retrieval by ID returns correct domain model with proper field mapping (id, name, symbol, code)
+- Test 4: "getFiatById returns null when not found" - Verifies null handling for non-existent IDs
+- Test 5: "insertFiat converts domain to entity and calls dao" - Verifies domain-to-entity conversion and DAO invocation
+- Test 6: "updateFiat converts domain to entity and calls dao" - Verifies update operation with conversion
+- Test 7: "deleteFiat converts domain to entity and calls dao" - Verifies delete operation with conversion
+- Test 8: "clearAllFiats calls dao" - Verifies clear operation delegates to DAO
+- Verifies entity-to-domain model conversion (toDomain()) and domain-to-entity conversion (toFiatEntity())
+- Uses MockK for mocking FiatDao and Turbine for Flow testing
+- Total: 8 test methods
+
+Test Case 5: CurrencyViewModelTest
+- Tests CurrencyViewModel state management and data loading
+- Test 1: "initial state has empty lists" - Verifies initial UI state has empty cryptos, fiats, and currencies lists, and isLoading is false
+- Test 2: "loadCurrencies combines cryptos and fiats correctly" - Verifies that loadCurrencies() correctly combines cryptos and fiats flows into a single currencies list
+- Test 3: "currencies list is updated when cryptos change" - Verifies that the currencies list is properly updated when cryptos flow emits new data
+- Verifies proper state management and Flow combination logic
+- Uses MockK for mocking GetAllCryptosUseCase and GetAllFiatsUseCase, StandardTestDispatcher for coroutine testing, and Turbine for Flow testing
+- Total: 3 test methods
+
+Test Case 6: DemoViewModelTest
+- Tests DemoViewModel database operations and error handling
+- Test 1: "clearDatabase calls both repositories and invokes onSuccess" - Verifies successful database clearing calls both fiat and crypto repositories and invokes onSuccess callback
+- Test 2: "clearDatabase invokes onError when fiat repository fails" - Verifies error handling when fiat repository throws exception during clear
+- Test 3: "clearDatabase invokes onError when crypto repository fails" - Verifies error handling when crypto repository throws exception during clear
+- Test 4: "insertToDatabase calls seedDatabase and invokes onSuccess when both succeed" - Verifies successful data insertion when both fiat and crypto seeding succeed
+- Test 5: "insertToDatabase invokes onError when fiat seeding fails" - Verifies error handling when fiat seeding returns Result.failure
+- Test 6: "insertToDatabase invokes onError when crypto seeding fails" - Verifies error handling when crypto seeding returns Result.failure
+- Test 7: "insertToDatabase invokes onError when exception is thrown" - Verifies error handling when unexpected exception is thrown during seeding
+- Verifies proper callback invocation (onSuccess/onError) and error message propagation
+- Uses MockK for mocking FiatRepository, CryptoRepository, and SeedDatabase, StandardTestDispatcher for coroutine testing
+- Total: 7 test methods
+
+All tests follow best practices:
+- Use MockK for dependency mocking
+- Use Turbine for Flow testing
+- Use StandardTestDispatcher for coroutine testing
+- Follow Given-When-Then pattern
+- Test both success and error scenarios
+- Verify all interactions with mocked dependencies
+
+Instrumented Tests (HiltAndroidTest): 
+Run with ./gradlew connectedAndroidTest
+
+Test Case 7: CryptoDaoTest
+- Instrumented test for CryptoDao using HiltAndroidTest with in-memory Room database
+- Test 1: "insertCrypto_insertsSuccessfully" - Verifies that inserting a crypto entity persists it correctly and can be retrieved by ID
+- Test 2: "getAllCryptos_returnsInsertedCryptos" - Verifies that getAllCryptos() returns all inserted cryptos in correct order
+- Test 3: "getCryptoById_returnsCorrectCrypto" - Verifies retrieval by ID returns the correct crypto entity with all fields (id, name, symbol)
+- Test 4: "getCryptoById_returnsNullWhenNotFound" - Verifies null is returned when querying for non-existent crypto ID
+- Test 5: "updateCrypto_updatesExistingCrypto" - Verifies that updating a crypto entity modifies the existing record correctly
+- Test 6: "deleteCrypto_removesCrypto" - Verifies that deleting a crypto entity removes it from the database
+- Test 7: "searchCryptos_returnsMatchingCryptosByName" - Verifies search functionality matches cryptos by name (partial match)
+- Test 8: "searchCryptos_returnsMatchingCryptosBySymbol" - Verifies search functionality matches cryptos by symbol
+- Test 9: "clearAllCryptos_removesAllCryptos" - Verifies that clearAllCryptos() removes all crypto entities from the database
+- Uses TestDatabaseModule for in-memory database injection via Hilt
+- Verifies entity persistence, retrieval, updates, deletion, and search operations with real Room database
+- Total: 9 test methods
+
+Test Case 8: FiatDaoTest
+- Instrumented test for FiatDao using HiltAndroidTest with in-memory Room database
+- Test 1: "insertFiat_insertsSuccessfully" - Verifies that inserting a fiat entity persists it correctly and can be retrieved by ID with all fields (id, name, symbol, code)
+- Test 2: "getAllFiats_returnsInsertedFiats" - Verifies that getAllFiats() returns all inserted fiats in correct order
+- Test 3: "getFiatById_returnsCorrectFiat" - Verifies retrieval by ID returns the correct fiat entity with all fields (id, name, symbol, code)
+- Test 4: "getFiatById_returnsNullWhenNotFound" - Verifies null is returned when querying for non-existent fiat ID
+- Test 5: "updateFiat_updatesExistingFiat" - Verifies that updating a fiat entity modifies the existing record correctly
+- Test 6: "deleteFiat_removesFiat" - Verifies that deleting a fiat entity removes it from the database
+- Test 7: "searchFiats_returnsMatchingFiatsByName" - Verifies search functionality matches fiats by name (partial match)
+- Test 8: "searchFiats_returnsMatchingFiatsBySymbol" - Verifies search functionality matches fiats by symbol (e.g., "€" for EUR)
+- Test 9: "clearAllFiats_removesAllFiats" - Verifies that clearAllFiats() removes all fiat entities from the database
+- Uses TestDatabaseModule for in-memory database injection via Hilt
+- Verifies entity persistence, retrieval, updates, deletion, and search operations with real Room database
+- Total: 9 test methods
+
+Test Case 9: CurrencyListScreenTest
+- Instrumented Compose UI test using HiltAndroidTest with createAndroidComposeRule
+- Test 1: "currencyListScreen_displaysTitle" - Verifies navigation to currency screen and displays search bar placeholder
+- Test 2: "currencyListScreen_displaysBackButton" - Verifies back button presence by checking navigation capability
+- Test 3: "currencyListScreen_displaysSearchBar" - Verifies search bar is displayed with "Search" placeholder text
+- Test 4: "currencyListScreen_canInputSearchText" - Verifies that text can be input into the search bar (e.g., "BTC")
+- Test 5: "currencyListScreen_displaysEmptyStateWhenNoItems" - Verifies empty state UI displays "No Items" text when database is empty
+- Test 6: "currencyListScreen_displaysNoResultWhenSearchHasNoMatch" - Verifies no result state displays "No Result" and "Try BTC" suggestions when search query has no matches
+- Uses createAndroidComposeRule with DemoActivity for full activity context
+- Tests real Compose UI components and user interactions (click, text input)
+- Verifies UI state changes based on data availability and search results
+- Total: 6 test methods
+
+All instrumented tests:
+- Use @HiltAndroidTest annotation
+- Use HiltAndroidRule for dependency injection
+- Use TestDatabaseModule for in-memory database
+- Run on Android device/emulator
+- Test real Room database operations
+- Test real Compose UI components
+
+Test Summary:
+- Unit Tests: 6 test classes, 30 test methods total
+  * GetAllCryptosUseCaseTest: 2 tests
+  * GetAllFiatsUseCaseTest: 2 tests
+  * CryptoRepositoryImplTest: 8 tests
+  * FiatRepositoryImplTest: 8 tests
+  * CurrencyViewModelTest: 3 tests
+  * DemoViewModelTest: 7 tests
+- Instrumented Tests: 3 test classes, 24 test methods total
+  * CryptoDaoTest: 9 tests
+  * FiatDaoTest: 9 tests
+  * CurrencyListScreenTest: 6 tests
+- Grand Total: 9 test classes, 54 test methods

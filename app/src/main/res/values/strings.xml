@@ -1,0 +1,35 @@
+<resources>
+    <!-- App -->
+    <string name="app_name">DemoActivity</string>
+    <string name="app_title">Crypto App</string>
+    
+    <!-- Buttons -->
+    <string name="button_clear_database">Clear the database</string>
+    <string name="button_insert_database">Insert to database</string>
+    <string name="button_see_cryptos">See Cryptos</string>
+    <string name="button_see_fiats">See Fiats</string>
+    <string name="button_see_both">See Cryptos and Fiats</string>
+    
+    <!-- Search -->
+    <string name="search_placeholder">Search</string>
+    <string name="search_content_description">Search</string>
+    <string name="back_content_description">Back</string>
+    <string name="clear_content_description">Clear</string>
+    
+    <!-- Empty States -->
+    <string name="empty_state_no_items">No Items</string>
+    <string name="empty_state_no_result">No Result</string>
+    <string name="empty_state_try_btc">Try BTC</string>
+    
+    <!-- Success Messages -->
+    <string name="database_cleared_success">Database cleared successfully</string>
+    <string name="data_inserted_success">Data inserted successfully</string>
+    
+    <!-- Error Messages -->
+    <string name="error_clear_database">Failed to clear database</string>
+    <string name="error_insert_data">Failed to insert data</string>
+    <string name="error_insert_fiats">Failed to insert fiats: %s</string>
+    <string name="error_insert_cryptos">Failed to insert cryptos: %s</string>
+    <string name="error_no_fiat_data">No fiat data found</string>
+    <string name="error_no_crypto_data">No crypto data found</string>
+</resources>
