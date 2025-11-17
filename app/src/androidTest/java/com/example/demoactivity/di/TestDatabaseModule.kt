@@ -3,6 +3,7 @@ package com.example.demoactivity.di
 import android.content.Context
 import androidx.room.Room
 import com.example.demoactivity.data.local.AppDatabase
+import com.example.demoactivity.data.local.CombinedCurrencyDao
 import com.example.demoactivity.data.local.CryptoDao
 import com.example.demoactivity.data.local.FiatDao
 import dagger.Module
@@ -37,6 +38,11 @@ object TestDatabaseModule {
     @Provides
     fun provideCryptoDao(database: AppDatabase): CryptoDao {
         return database.cryptoDao()
+    }
+
+    @Provides
+    fun provideCombinedCurrencyDao(database: AppDatabase): CombinedCurrencyDao {
+        return database.combinedCurrencyDao()
     }
 }
 

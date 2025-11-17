@@ -1,7 +1,6 @@
 package com.example.demoactivity.data.repository
 
-import com.example.demoactivity.data.local.CryptoDao
-import com.example.demoactivity.data.local.FiatDao
+import com.example.demoactivity.data.local.CombinedCurrencyDao
 import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertNotNull
@@ -9,15 +8,13 @@ import org.junit.Before
 import org.junit.Test
 
 class CombinedCurrencyRepositoryImplTest {
-    private lateinit var cryptoDao: CryptoDao
-    private lateinit var fiatDao: FiatDao
+    private lateinit var combinedCurrencyDao: CombinedCurrencyDao
     private lateinit var repository: CombinedCurrencyRepositoryImpl
 
     @Before
     fun setup() {
-        cryptoDao = mockk(relaxed = true)
-        fiatDao = mockk(relaxed = true)
-        repository = CombinedCurrencyRepositoryImpl(cryptoDao, fiatDao)
+        combinedCurrencyDao = mockk(relaxed = true)
+        repository = CombinedCurrencyRepositoryImpl(combinedCurrencyDao)
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.example.demoactivity.di
 import android.content.Context
 import androidx.room.Room
 import com.example.demoactivity.data.local.AppDatabase
+import com.example.demoactivity.data.local.CombinedCurrencyDao
 import com.example.demoactivity.data.local.CryptoDao
 import com.example.demoactivity.data.local.DatabaseMigrations
 import com.example.demoactivity.data.local.FiatDao
@@ -24,7 +25,11 @@ object DatabaseModule {
             AppDatabase::class.java,
             "app_database"
         )
-            .addMigrations(DatabaseMigrations.MIGRATION_1_2, DatabaseMigrations.MIGRATION_2_3)
+            .addMigrations(
+                DatabaseMigrations.MIGRATION_1_2,
+                DatabaseMigrations.MIGRATION_2_3,
+                DatabaseMigrations.MIGRATION_3_4
+            )
             .build()
     }
 
@@ -36,6 +41,11 @@ object DatabaseModule {
     @Provides
     fun provideCryptoDao(database: AppDatabase): CryptoDao {
         return database.cryptoDao()
+    }
+
+    @Provides
+    fun provideCombinedCurrencyDao(database: AppDatabase): CombinedCurrencyDao {
+        return database.combinedCurrencyDao()
     }
 }
 
