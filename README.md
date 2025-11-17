@@ -49,15 +49,16 @@ The project follows **Clean Architecture** with clear separation of concerns:
 
 2. **Domain Layer**
    - `CurrencyInfo` - Domain model
-   - `CryptoRepository` / `FiatRepository` - Repository interfaces
+   - `CryptoRepository` / `FiatRepository` / `CombinedCurrencyRepository` - Repository interfaces
    - `GetAllCryptosUseCase` / `GetAllFiatsUseCase` - Business logic
 
 3. **Data Layer**
-   - `CryptoRepositoryImpl` / `FiatRepositoryImpl` - Repository implementations
-   - `CryptoDao` / `FiatDao` - Room database access objects
+   - `CryptoRepositoryImpl` / `FiatRepositoryImpl` / `CombinedCurrencyRepositoryImpl` - Repository implementations
+   - `CryptoDao` / `FiatDao` / `CombinedCurrencyDao` - Room database access objects
    - `CryptoEntity` / `FiatEntity` - Database entities
+   - `CombinedCurrencyView` - Database view for UNION queries
    - `SeedDatabase` - Data seeding from JSON assets
-   - `CurrencyPagingSource` - Paging3 data source
+   - Room PagingSource for efficient pagination
 
 ## 🛠️ Tech Stack
 
@@ -87,37 +88,39 @@ The project follows **Clean Architecture** with clear separation of concerns:
 app/src/main/java/com/example/demoactivity/
 ├── data/
 │   ├── local/
-│   │   ├── AppDatabase.kt          # Room database
-│   │   ├── CryptoDao.kt             # Crypto data access
-│   │   ├── FiatDao.kt               # Fiat data access
-│   │   ├── CryptoEntity.kt          # Crypto entity
-│   │   ├── FiatEntity.kt            # Fiat entity
-│   │   └── DatabaseMigrations.kt    # Database migrations
-│   ├── paging/
-│   │   └── CurrencyPagingSource.kt  # Paging3 source
+│   │   ├── AppDatabase.kt              # Room database
+│   │   ├── CryptoDao.kt                # Crypto data access
+│   │   ├── FiatDao.kt                  # Fiat data access
+│   │   ├── CombinedCurrencyDao.kt      # Combined currency DAO (UNION queries)
+│   │   ├── CombinedCurrencyView.kt     # Database view for combined currencies
+│   │   ├── CryptoEntity.kt              # Crypto entity
+│   │   ├── FiatEntity.kt               # Fiat entity
+│   │   └── DatabaseMigrations.kt       # Database migrations
 │   ├── repository/
-│   │   ├── CryptoRepositoryImpl.kt   # Crypto repository
-│   │   └── FiatRepositoryImpl.kt    # Fiat repository
+│   │   ├── CryptoRepositoryImpl.kt     # Crypto repository implementation
+│   │   ├── FiatRepositoryImpl.kt       # Fiat repository implementation
+│   │   └── CombinedCurrencyRepositoryImpl.kt  # Combined currency repository
 │   └── seed/
-│       └── SeedDatabase.kt          # Data seeding
+│       └── SeedDatabase.kt              # Data seeding from JSON assets
 ├── domain/
 │   ├── model/
-│   │   └── CurrencyInfo.kt           # Domain model
+│   │   └── CurrencyInfo.kt              # Domain model
 │   ├── repository/
-│   │   ├── CryptoRepository.kt      # Crypto interface
-│   │   └── FiatRepository.kt        # Fiat interface
+│   │   ├── CryptoRepository.kt          # Crypto repository interface
+│   │   ├── FiatRepository.kt            # Fiat repository interface
+│   │   └── CombinedCurrencyRepository.kt # Combined currency repository interface
 │   └── usecase/
-│       ├── GetAllCryptosUseCase.kt   # Get cryptos use case
-│       └── GetAllFiatsUseCase.kt    # Get fiats use case
+│       ├── GetAllCryptosUseCase.kt      # Get cryptos use case
+│       └── GetAllFiatsUseCase.kt        # Get fiats use case
 ├── presentation/
-│   ├── CurrencyViewModel.kt          # Currency list VM
-│   ├── DemoViewModel.kt              # Database operations VM
-│   └── CurrencyListScreen.kt        # Currency list UI
+│   ├── CurrencyViewModel.kt              # Currency list ViewModel
+│   ├── DemoViewModel.kt                  # Database operations ViewModel
+│   └── CurrencyListScreen.kt            # Currency list Compose UI
 ├── di/
-│   ├── DatabaseModule.kt            # Database DI
-│   └── RepositoryModule.kt          # Repository DI
+│   ├── DatabaseModule.kt                # Database dependency injection
+│   └── RepositoryModule.kt              # Repository dependency injection
 └── ui/
-    └── theme/                        # Material theme
+    └── theme/                            # Material Design 3 theme
 ```
 
 ## 🚀 Getting Started
@@ -172,31 +175,52 @@ The project uses Gradle Version Catalog (`gradle/libs.versions.toml`) for depend
 
 The project includes comprehensive test coverage:
 
-- **Unit Tests**: 30 tests
+- **Unit Tests**: 41 tests
   - UseCase tests (4 tests)
-  - Repository tests (16 tests)
+    - GetAllCryptosUseCaseTest (2 tests)
+    - GetAllFiatsUseCaseTest (2 tests)
+  - Repository tests (25 tests)
+    - CryptoRepositoryImplTest (9 tests)
+    - FiatRepositoryImplTest (9 tests)
+    - CombinedCurrencyRepositoryImplTest (7 tests)
   - ViewModel tests (12 tests)
+    - CurrencyViewModelTest (3 tests)
+    - DemoViewModelTest (9 tests)
 
 - **Instrumented Tests**: 24 tests
   - DAO tests (18 tests)
+    - CryptoDaoTest (9 tests)
+    - FiatDaoTest (9 tests)
   - Compose UI tests (6 tests)
+    - CurrencyListScreenTest (6 tests)
 
-**Total**: 54 tests across 9 test classes
+**Total**: 65 tests across 10 test classes
 
 ### Test Structure
 
 ```
 app/src/
-├── test/                    # Unit tests
+├── test/                                    # Unit tests
 │   └── java/com/example/demoactivity/
 │       ├── domain/usecase/
+│       │   ├── GetAllCryptosUseCaseTest.kt
+│       │   └── GetAllFiatsUseCaseTest.kt
 │       ├── data/repository/
+│       │   ├── CryptoRepositoryImplTest.kt
+│       │   ├── FiatRepositoryImplTest.kt
+│       │   └── CombinedCurrencyRepositoryImplTest.kt
 │       └── presentation/
-└── androidTest/             # Instrumented tests
+│           ├── CurrencyViewModelTest.kt
+│           └── DemoViewModelTest.kt
+└── androidTest/                             # Instrumented tests
     └── java/com/example/demoactivity/
         ├── data/local/
+        │   ├── CryptoDaoTest.kt
+        │   └── FiatDaoTest.kt
         ├── presentation/
+        │   └── CurrencyListScreenTest.kt
         └── di/
+            └── TestDatabaseModule.kt
 ```
 
 ## 🏗️ Building
