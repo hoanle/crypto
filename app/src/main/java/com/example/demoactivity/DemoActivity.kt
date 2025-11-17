@@ -88,21 +88,27 @@ fun MainScreen() {
         }
         Screen.Cryptos -> {
             CurrencyListScreen(
-                currencies = currencyUiState.cryptos,
+                filteredCurrencies = currencyUiState.filteredCryptos,
+                searchQuery = currencyUiState.searchQuery,
+                onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
                 onBack = { currentScreen = Screen.Main },
                 isLoading = currencyUiState.isLoading
             )
         }
         Screen.Fiats -> {
             CurrencyListScreen(
-                currencies = currencyUiState.fiats,
+                filteredCurrencies = currencyUiState.filteredFiats,
+                searchQuery = currencyUiState.searchQuery,
+                onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
                 onBack = { currentScreen = Screen.Main },
                 isLoading = currencyUiState.isLoading
             )
         }
         Screen.Both -> {
             CurrencyListScreen(
-                currencies = currencyUiState.currencies,
+                filteredCurrencies = currencyUiState.filteredCurrencies,
+                searchQuery = currencyUiState.searchQuery,
+                onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
                 onBack = { currentScreen = Screen.Main },
                 isLoading = currencyUiState.isLoading
             )

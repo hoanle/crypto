@@ -49,38 +49,19 @@ private const val ITEMS_PER_PAGE = 20
 
 @Composable
 fun CurrencyListScreen(
-    currencies: List<CurrencyInfo>,
+    filteredCurrencies: List<CurrencyInfo>,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
     onBack: () -> Unit = {},
     isLoading: Boolean = false
 ) {
-    var searchQuery by remember { mutableStateOf("") }
     var isSearchFocused by remember { mutableStateOf(false) }
 
-    // Filter items based on search query with improved matching rules
-    val filteredItems = remember(currencies, searchQuery) {
-        if (searchQuery.isBlank()) {
-            currencies
-        } else {
-            val query = searchQuery.lowercase().trim()
-            currencies.filter { currency ->
-                val nameLower = currency.name.lowercase()
-                val symbolLower = currency.symbol.lowercase()
-                
-                // Rule 1: Coin name starts with the search term
-                nameLower.startsWith(query) ||
-                // Rule 2: Coin name contains a space-prefixed partial match
-                nameLower.contains(" $query") ||
-                // Rule 3: Coin symbol starts with the search term
-                symbolLower.startsWith(query)
-            }
-        }
-    }
-
     // Create PagingData from filtered items
-    val pagingFlow = remember(filteredItems) {
+    val pagingFlow = remember(filteredCurrencies) {
         Pager(
             config = PagingConfig(pageSize = ITEMS_PER_PAGE, enablePlaceholders = false),
-            pagingSourceFactory = { CurrencyPagingSource(filteredItems) }
+            pagingSourceFactory = { CurrencyPagingSource(filteredCurrencies) }
         ).flow
     }
     
@@ -111,7 +92,7 @@ fun CurrencyListScreen(
                 // Search bar to the right of back button
                 OutlinedTextField(
                     value = searchQuery,
-                    onValueChange = { searchQuery = it },
+                    onValueChange = onSearchQueryChange,
                     modifier = Modifier
                         .weight(1f)
                         .onFocusChanged { isSearchFocused = it.isFocused },
@@ -125,7 +106,7 @@ fun CurrencyListScreen(
                     trailingIcon = {
                         if (isSearchFocused && searchQuery.isNotEmpty()) {
                             IconButton(
-                                onClick = { searchQuery = "" }
+                                onClick = { onSearchQueryChange("") }
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Clear,
@@ -155,7 +136,7 @@ fun CurrencyListScreen(
                         CircularProgressIndicator()
                     }
                 }
-                filteredItems.isEmpty() -> {
+                filteredCurrencies.isEmpty() -> {
                     // Empty state
                     Box(
                         modifier = Modifier
