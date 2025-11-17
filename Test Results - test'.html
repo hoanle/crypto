@@ -2,7 +2,7 @@
 <html xmlns:str="http://exslt.org/strings" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <META http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Test Results &mdash; Tests in 'com.example.demoactivity'</title>
+        <title>Test Results &mdash; Tests in 'DemoActivity.app.unitTest'</title>
         <style type="text/css">
           html {
             height: 100%
@@ -572,9 +572,9 @@ jQuery.cookie = function(name, value, options) {
     <body>
         <div id="container">
             <div id="header">
-                <div class="time" xmlns="">1.04 s</div>
+                <div class="time" xmlns="">973 ms</div>
                 <h1>
-                    Tests in 'com.example.demoactivity': <strong><span class="total" xmlns="http://www.w3.org/1999/xhtml">33 total, </span><span class="passed">33 passed</span></strong>
+                    Tests in 'DemoActivity.app.unitTest': <strong><span class="total" xmlns="http://www.w3.org/1999/xhtml">42 total, </span><span class="passed">42 passed</span></strong>
                 </h1>
                 <div id="treecontrol">
                     <ul>
@@ -593,24 +593,66 @@ jQuery.cookie = function(name, value, options) {
                 <ul id="tree">
                     <li xmlns="" class="level top open">
                         <span><em class="time">
-                                <div class="time">1 ms</div>
+                                <div class="time">0 ms</div>
                             </em>ExampleUnitTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">1 ms</div>
+                                        <div class="time">0 ms</div>
                                     </em><em class="status">passed</em>addition_isCorrect</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">786 ms</div>
+                                <div class="time">590 ms</div>
+                            </em>CombinedCurrencyRepositoryImplTest</span>
+                        <ul>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">582 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged handles blank query</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">1 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged trims query with both leading and trailing whitespace</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">2 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged trims query with trailing whitespace</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">1 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged normalizes multiple whitespaces to single space</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">1 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged trims query with leading whitespace</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">1 ms</div>
+                                    </em><em class="status">passed</em>searchCombinedCurrenciesPaged handles empty query</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">2 ms</div>
+                                    </em><em class="status">passed</em>getAllCombinedCurrenciesPaged returns flow of paging data</span>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="level top open">
+                        <span><em class="time">
+                                <div class="time">178 ms</div>
                             </em>CryptoRepositoryImplTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">705 ms</div>
+                                        <div class="time">106 ms</div>
                                     </em><em class="status">passed</em>getCryptoById returns domain crypto when found</span>
                             </li>
                             <li class="level test">
@@ -620,12 +662,12 @@ jQuery.cookie = function(name, value, options) {
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">21 ms</div>
+                                        <div class="time">19 ms</div>
                                     </em><em class="status">passed</em>insertCrypto converts domain to entity and calls dao</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">41 ms</div>
+                                        <div class="time">33 ms</div>
                                     </em><em class="status">passed</em>getAllCryptos returns flow of domain cryptos</span>
                             </li>
                             <li class="level test">
@@ -636,59 +678,69 @@ jQuery.cookie = function(name, value, options) {
                             <li class="level test">
                                 <span><em class="time">
                                         <div class="time">4 ms</div>
+                                    </em><em class="status">passed</em>searchCryptos normalizes multiple whitespaces to single space</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">3 ms</div>
                                     </em><em class="status">passed</em>clearAllCryptos calls dao</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">4 ms</div>
+                                        <div class="time">3 ms</div>
                                     </em><em class="status">passed</em>searchCryptos returns flow of filtered domain cryptos</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">4 ms</div>
+                                        <div class="time">3 ms</div>
                                     </em><em class="status">passed</em>deleteCrypto converts domain to entity and calls dao</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">65 ms</div>
+                                <div class="time">40 ms</div>
                             </em>FiatRepositoryImplTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">40 ms</div>
+                                        <div class="time">19 ms</div>
                                     </em><em class="status">passed</em>getFiatById returns null when not found</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">7 ms</div>
+                                        <div class="time">6 ms</div>
                                     </em><em class="status">passed</em>updateFiat converts domain to entity and calls dao</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">4 ms</div>
+                                        <div class="time">3 ms</div>
                                     </em><em class="status">passed</em>searchFiats returns flow of filtered domain fiats</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">2 ms</div>
+                                        <div class="time">1 ms</div>
                                     </em><em class="status">passed</em>getFiatById returns domain fiat when found</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">2 ms</div>
                                     </em><em class="status">passed</em>getAllFiats returns flow of domain fiats</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">2 ms</div>
                                     </em><em class="status">passed</em>clearAllFiats calls dao</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">2 ms</div>
                                     </em><em class="status">passed</em>insertFiat converts domain to entity and calls dao</span>
+                            </li>
+                            <li class="level test">
+                                <span><em class="time">
+                                        <div class="time">2 ms</div>
+                                    </em><em class="status">passed</em>searchFiats normalizes multiple whitespaces to single space</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
@@ -699,93 +751,93 @@ jQuery.cookie = function(name, value, options) {
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">25 ms</div>
+                                <div class="time">23 ms</div>
                             </em>GetAllCryptosUseCaseTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">23 ms</div>
+                                        <div class="time">22 ms</div>
                                     </em><em class="status">passed</em>invoke returns flow of cryptos from repository</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">2 ms</div>
+                                        <div class="time">1 ms</div>
                                     </em><em class="status">passed</em>invoke returns empty list when repository returns empty list</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">22 ms</div>
+                                <div class="time">20 ms</div>
                             </em>GetAllFiatsUseCaseTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">20 ms</div>
+                                        <div class="time">19 ms</div>
                                     </em><em class="status">passed</em>invoke returns empty list when repository returns empty list</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">2 ms</div>
+                                        <div class="time">1 ms</div>
                                     </em><em class="status">passed</em>invoke returns flow of fiats from repository</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">39 ms</div>
+                                <div class="time">35 ms</div>
                             </em>CurrencyViewModelTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">33 ms</div>
-                                    </em><em class="status">passed</em>currencies list is updated when cryptos change</span>
+                                        <div class="time">28 ms</div>
+                                    </em><em class="status">passed</em>updateSearchQuery updates search query</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
-                                    </em><em class="status">passed</em>initial state has empty lists</span>
+                                        <div class="time">5 ms</div>
+                                    </em><em class="status">passed</em>clearSearchQuery resets search query to empty</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
-                                    </em><em class="status">passed</em>loadCurrencies combines cryptos and fiats correctly</span>
+                                        <div class="time">2 ms</div>
+                                    </em><em class="status">passed</em>initial state has empty search query</span>
                             </li>
                         </ul>
                     </li>
                     <li class="level top open">
                         <span><em class="time">
-                                <div class="time">101 ms</div>
+                                <div class="time">87 ms</div>
                             </em>DemoViewModelTest</span>
                         <ul>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">60 ms</div>
+                                        <div class="time">59 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase invokes onError when exception is thrown</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">9 ms</div>
+                                        <div class="time">5 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase invokes onError with SeedError when crypto seeding returns SeedError</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">5 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase invokes onError when fiat seeding fails</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">8 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>clearDatabase calls both repositories and invokes onSuccess</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">3 ms</div>
+                                        <div class="time">2 ms</div>
                                     </em><em class="status">passed</em>clearDatabase invokes onError when crypto repository fails</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">5 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase calls seedDatabase and invokes onSuccess when both succeed</span>
                             </li>
                             <li class="level test">
@@ -795,12 +847,12 @@ jQuery.cookie = function(name, value, options) {
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">5 ms</div>
+                                        <div class="time">4 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase invokes onError when crypto seeding fails</span>
                             </li>
                             <li class="level test">
                                 <span><em class="time">
-                                        <div class="time">4 ms</div>
+                                        <div class="time">3 ms</div>
                                     </em><em class="status">passed</em>insertToDatabase invokes onError with SeedError when fiat seeding returns SeedError</span>
                             </li>
                         </ul>
@@ -809,7 +861,7 @@ jQuery.cookie = function(name, value, options) {
             </div>
         </div>
         <div id="footer">
-            <p>Generated by Android Studio on 11/17/25, 3:39 AM</p>
+            <p>Generated by Android Studio on 11/17/25, 2:49 PM</p>
         </div>
     </body>
 </html>

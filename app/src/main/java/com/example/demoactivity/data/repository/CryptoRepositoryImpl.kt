@@ -1,5 +1,9 @@
 package com.example.demoactivity.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.demoactivity.data.local.CryptoDao
 import com.example.demoactivity.data.local.toCryptoEntity
 import com.example.demoactivity.domain.model.CurrencyInfo
@@ -18,8 +22,28 @@ class CryptoRepositoryImpl @Inject constructor(
     }
 
     override fun searchCryptos(query: String): Flow<List<CurrencyInfo>> {
-        return cryptoDao.searchCryptos(query).map { entities ->
+        val trimmedQuery = query.trim().replace(Regex("\\s+"), " ")
+        return cryptoDao.searchCryptos(trimmedQuery).map { entities ->
             entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getAllCryptosPaged(): Flow<PagingData<CurrencyInfo>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { cryptoDao.getAllCryptosPaged() }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
+
+    override fun searchCryptosPaged(query: String): Flow<PagingData<CurrencyInfo>> {
+        val trimmedQuery = query.trim().replace(Regex("\\s+"), " ")
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { cryptoDao.searchCryptosPaged(trimmedQuery) }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
         }
     }
 

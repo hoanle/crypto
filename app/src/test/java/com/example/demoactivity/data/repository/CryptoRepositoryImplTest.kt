@@ -69,6 +69,27 @@ class CryptoRepositoryImplTest {
     }
 
     @Test
+    fun `searchCryptos normalizes multiple whitespaces to single space`() = runTest {
+        // Given
+        val entities = listOf(
+            CryptoEntity(id = "ETC", name = "Ethereum Classic", symbol = "ETC")
+        )
+        every { cryptoDao.searchCryptos("Ethereum Classic") } returns flowOf(entities)
+
+        // When - Query with multiple whitespaces between words
+        val result = repository.searchCryptos("Ethereum  Classic")
+
+        // Then - Should normalize to single space and call DAO with normalized query
+        result.test {
+            val items = awaitItem()
+            assertEquals(1, items.size)
+            assertEquals("ETC", items[0].id)
+            awaitComplete()
+        }
+        io.mockk.verify(exactly = 1) { cryptoDao.searchCryptos("Ethereum Classic") }
+    }
+
+    @Test
     fun `getCryptoById returns domain crypto when found`() = runTest {
         // Given
         val entity = CryptoEntity(id = "BTC", name = "Bitcoin", symbol = "BTC")

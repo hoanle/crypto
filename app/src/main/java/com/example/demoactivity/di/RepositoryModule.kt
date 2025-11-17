@@ -1,7 +1,9 @@
 package com.example.demoactivity.di
 
+import com.example.demoactivity.data.repository.CombinedCurrencyRepositoryImpl
 import com.example.demoactivity.data.repository.CryptoRepositoryImpl
 import com.example.demoactivity.data.repository.FiatRepositoryImpl
+import com.example.demoactivity.domain.repository.CombinedCurrencyRepository
 import com.example.demoactivity.domain.repository.CryptoRepository
 import com.example.demoactivity.domain.repository.FiatRepository
 import dagger.Binds
@@ -24,5 +26,11 @@ abstract class RepositoryModule {
     abstract fun bindCryptoRepository(
         cryptoRepositoryImpl: CryptoRepositoryImpl
     ): CryptoRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCombinedCurrencyRepository(
+        combinedCurrencyRepositoryImpl: CombinedCurrencyRepositoryImpl
+    ): CombinedCurrencyRepository
 }
 

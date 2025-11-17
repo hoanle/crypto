@@ -52,6 +52,7 @@ fun MainScreen() {
     val demoViewModel: DemoViewModel = hiltViewModel()
     val currencyViewModel: CurrencyViewModel = hiltViewModel()
     val currencyUiState by currencyViewModel.uiState.collectAsState()
+    val searchQuery by currencyViewModel.searchQuery.collectAsState()
 
     when (currentScreen) {
         Screen.Main -> {
@@ -88,28 +89,37 @@ fun MainScreen() {
         }
         Screen.Cryptos -> {
             CurrencyListScreen(
-                filteredCurrencies = currencyUiState.filteredCryptos,
-                searchQuery = currencyUiState.searchQuery,
+                pagingDataFlow = currencyViewModel.cryptosPaged,
+                searchQuery = searchQuery,
                 onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
-                onBack = { currentScreen = Screen.Main },
+                onBack = {
+                    currencyViewModel.clearSearchQuery()
+                    currentScreen = Screen.Main
+                },
                 isLoading = currencyUiState.isLoading
             )
         }
         Screen.Fiats -> {
             CurrencyListScreen(
-                filteredCurrencies = currencyUiState.filteredFiats,
-                searchQuery = currencyUiState.searchQuery,
+                pagingDataFlow = currencyViewModel.fiatsPaged,
+                searchQuery = searchQuery,
                 onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
-                onBack = { currentScreen = Screen.Main },
+                onBack = {
+                    currencyViewModel.clearSearchQuery()
+                    currentScreen = Screen.Main
+                },
                 isLoading = currencyUiState.isLoading
             )
         }
         Screen.Both -> {
             CurrencyListScreen(
-                filteredCurrencies = currencyUiState.filteredCurrencies,
-                searchQuery = currencyUiState.searchQuery,
+                pagingDataFlow = currencyViewModel.combinedCurrenciesPaged,
+                searchQuery = searchQuery,
                 onSearchQueryChange = { currencyViewModel.updateSearchQuery(it) },
-                onBack = { currentScreen = Screen.Main },
+                onBack = {
+                    currencyViewModel.clearSearchQuery()
+                    currentScreen = Screen.Main
+                },
                 isLoading = currencyUiState.isLoading
             )
         }

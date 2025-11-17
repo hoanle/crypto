@@ -71,6 +71,27 @@ class FiatRepositoryImplTest {
     }
 
     @Test
+    fun `searchFiats normalizes multiple whitespaces to single space`() = runTest {
+        // Given
+        val entities = listOf(
+            FiatEntity(id = "USD", name = "US Dollar", symbol = "$", code = "USD")
+        )
+        every { fiatDao.searchFiats("US Dollar") } returns flowOf(entities)
+
+        // When - Query with multiple whitespaces between words
+        val result = repository.searchFiats("US  Dollar")
+
+        // Then - Should normalize to single space and call DAO with normalized query
+        result.test {
+            val items = awaitItem()
+            assertEquals(1, items.size)
+            assertEquals("USD", items[0].id)
+            awaitComplete()
+        }
+        io.mockk.verify(exactly = 1) { fiatDao.searchFiats("US Dollar") }
+    }
+
+    @Test
     fun `getFiatById returns domain fiat when found`() = runTest {
         // Given
         val entity = FiatEntity(id = "USD", name = "US Dollar", symbol = "$", code = "USD")

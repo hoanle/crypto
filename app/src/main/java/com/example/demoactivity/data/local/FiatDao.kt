@@ -1,5 +1,6 @@
 package com.example.demoactivity.data.local
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -13,6 +14,9 @@ import kotlinx.coroutines.flow.Flow
 interface FiatDao {
     @Query("SELECT * FROM fiats ORDER BY id ASC")
     fun getAllFiats(): Flow<List<FiatEntity>>
+
+    @Query("SELECT * FROM fiats ORDER BY name ASC")
+    fun getAllFiatsPaged(): PagingSource<Int, FiatEntity>
 
     @Query("""
         SELECT * FROM fiats 
@@ -28,6 +32,21 @@ interface FiatDao {
             name ASC
     """)
     fun searchFiats(query: String): Flow<List<FiatEntity>>
+
+    @Query("""
+        SELECT * FROM fiats 
+        WHERE LOWER(name) LIKE LOWER(:query) || '%' 
+           OR LOWER(name) LIKE '% ' || LOWER(:query) || '%'
+           OR LOWER(symbol) LIKE LOWER(:query) || '%'
+        ORDER BY 
+            CASE 
+                WHEN LOWER(name) LIKE LOWER(:query) || '%' THEN 1
+                WHEN LOWER(symbol) LIKE LOWER(:query) || '%' THEN 2
+                ELSE 3
+            END,
+            name ASC
+    """)
+    fun searchFiatsPaged(query: String): PagingSource<Int, FiatEntity>
 
     @Query("SELECT * FROM fiats WHERE id = :id")
     suspend fun getFiatById(id: String): FiatEntity?

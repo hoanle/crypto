@@ -1,11 +1,16 @@
 package com.example.demoactivity.domain.repository
 
+import androidx.paging.PagingData
 import com.example.demoactivity.domain.model.CurrencyInfo
 import kotlinx.coroutines.flow.Flow
 
 interface FiatRepository {
     fun getAllFiats(): Flow<List<CurrencyInfo>>
     fun searchFiats(query: String): Flow<List<CurrencyInfo>>
+    
+    fun getAllFiatsPaged(): Flow<PagingData<CurrencyInfo>>
+    fun searchFiatsPaged(query: String): Flow<PagingData<CurrencyInfo>>
+    
     suspend fun getFiatById(id: String): CurrencyInfo?
     suspend fun insertFiat(fiat: CurrencyInfo)
     suspend fun insertFiats(fiats: List<CurrencyInfo>)

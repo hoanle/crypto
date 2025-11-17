@@ -1,9 +1,11 @@
 package com.example.demoactivity.presentation
 
 import app.cash.turbine.test
+import androidx.paging.PagingData
 import com.example.demoactivity.domain.model.CurrencyInfo
-import com.example.demoactivity.domain.usecase.GetAllCryptosUseCase
-import com.example.demoactivity.domain.usecase.GetAllFiatsUseCase
+import com.example.demoactivity.domain.repository.CombinedCurrencyRepository
+import com.example.demoactivity.domain.repository.CryptoRepository
+import com.example.demoactivity.domain.repository.FiatRepository
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -17,21 +19,22 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Before
 import org.junit.Test
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class CurrencyViewModelTest {
-    private lateinit var getAllCryptosUseCase: GetAllCryptosUseCase
-    private lateinit var getAllFiatsUseCase: GetAllFiatsUseCase
+    private lateinit var cryptoRepository: CryptoRepository
+    private lateinit var fiatRepository: FiatRepository
+    private lateinit var combinedCurrencyRepository: CombinedCurrencyRepository
     private val testDispatcher = StandardTestDispatcher()
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        getAllCryptosUseCase = mockk()
-        getAllFiatsUseCase = mockk()
+        cryptoRepository = mockk()
+        fiatRepository = mockk()
+        combinedCurrencyRepository = mockk()
     }
 
     @After
@@ -39,17 +42,18 @@ class CurrencyViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun createViewModel(
-        cryptosFlow: Flow<List<CurrencyInfo>> = flowOf(emptyList()),
-        fiatsFlow: Flow<List<CurrencyInfo>> = flowOf(emptyList())
-    ): CurrencyViewModel {
-        every { getAllCryptosUseCase() } returns cryptosFlow
-        every { getAllFiatsUseCase() } returns fiatsFlow
-        return CurrencyViewModel(getAllCryptosUseCase, getAllFiatsUseCase)
+    private fun createViewModel(): CurrencyViewModel {
+        every { cryptoRepository.getAllCryptosPaged() } returns flowOf(PagingData.empty())
+        every { cryptoRepository.searchCryptosPaged(any()) } returns flowOf(PagingData.empty())
+        every { fiatRepository.getAllFiatsPaged() } returns flowOf(PagingData.empty())
+        every { fiatRepository.searchFiatsPaged(any()) } returns flowOf(PagingData.empty())
+        every { combinedCurrencyRepository.getAllCombinedCurrenciesPaged() } returns flowOf(PagingData.empty())
+        every { combinedCurrencyRepository.searchCombinedCurrenciesPaged(any()) } returns flowOf(PagingData.empty())
+        return CurrencyViewModel(cryptoRepository, fiatRepository, combinedCurrencyRepository)
     }
 
     @Test
-    fun `initial state has empty lists`() = runTest(testDispatcher) {
+    fun `initial state has empty search query`() = runTest(testDispatcher) {
         // Given
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -57,60 +61,45 @@ class CurrencyViewModelTest {
         // When & Then
         viewModel.uiState.test {
             val state = awaitItem()
-            assertEquals(emptyList<CurrencyInfo>(), state.cryptos)
-            assertEquals(emptyList<CurrencyInfo>(), state.fiats)
-            assertEquals(emptyList<CurrencyInfo>(), state.currencies)
-            assertFalse(state.isLoading)
+            assertEquals("", state.searchQuery)
         }
     }
 
     @Test
-    fun `loadCurrencies combines cryptos and fiats correctly`() = runTest(testDispatcher) {
+    fun `updateSearchQuery updates search query`() = runTest(testDispatcher) {
         // Given
-        val cryptos = listOf(
-            CurrencyInfo(id = "BTC", name = "Bitcoin", symbol = "BTC", code = null),
-            CurrencyInfo(id = "ETH", name = "Ethereum", symbol = "ETH", code = null)
-        )
-        val fiats = listOf(
-            CurrencyInfo(id = "USD", name = "US Dollar", symbol = "$", code = "USD"),
-            CurrencyInfo(id = "SGD", name = "Singapore Dollar", symbol = "$", code = "SGD")
-        )
-        val viewModel = createViewModel(
-            cryptosFlow = flowOf(cryptos),
-            fiatsFlow = flowOf(fiats)
-        )
+        val viewModel = createViewModel()
         advanceUntilIdle()
 
-        // When & Then
-        viewModel.uiState.test {
-            val state = awaitItem()
-            assertEquals(cryptos, state.cryptos)
-            assertEquals(fiats, state.fiats)
-            assertEquals(cryptos + fiats, state.currencies)
-            assertFalse(state.isLoading)
+        // When
+        viewModel.updateSearchQuery("BTC")
+        advanceUntilIdle()
+
+        // Then
+        viewModel.searchQuery.test {
+            assertEquals("BTC", awaitItem())
         }
     }
 
     @Test
-    fun `currencies list is updated when cryptos change`() = runTest(testDispatcher) {
+    fun `clearSearchQuery resets search query to empty`() = runTest(testDispatcher) {
         // Given
-        val initialCryptos = listOf(
-            CurrencyInfo(id = "BTC", name = "Bitcoin", symbol = "BTC", code = null)
-        )
-        val fiats = listOf(
-            CurrencyInfo(id = "USD", name = "US Dollar", symbol = "$", code = "USD")
-        )
-        val viewModel = createViewModel(
-            cryptosFlow = flowOf(initialCryptos),
-            fiatsFlow = flowOf(fiats)
-        )
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+        viewModel.updateSearchQuery("BTC")
         advanceUntilIdle()
 
-        // When & Then
+        // When
+        viewModel.clearSearchQuery()
+        advanceUntilIdle()
+
+        // Then
+        viewModel.searchQuery.test {
+            assertEquals("", awaitItem())
+        }
         viewModel.uiState.test {
             val state = awaitItem()
-            assertEquals(initialCryptos.size + fiats.size, state.currencies.size)
-            assertEquals(initialCryptos + fiats, state.currencies)
+            assertEquals("", state.searchQuery)
         }
     }
 }

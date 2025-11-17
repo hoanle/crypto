@@ -2,99 +2,90 @@ package com.example.demoactivity.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.demoactivity.domain.model.CurrencyInfo
-import com.example.demoactivity.domain.usecase.GetAllCryptosUseCase
-import com.example.demoactivity.domain.usecase.GetAllFiatsUseCase
+import com.example.demoactivity.domain.repository.CombinedCurrencyRepository
+import com.example.demoactivity.domain.repository.CryptoRepository
+import com.example.demoactivity.domain.repository.FiatRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flatMapLatest
 import javax.inject.Inject
 
+@OptIn(ExperimentalCoroutinesApi::class)
+
 data class CurrencyUiState(
-    val currencies: List<CurrencyInfo> = emptyList(),
-    val cryptos: List<CurrencyInfo> = emptyList(),
-    val fiats: List<CurrencyInfo> = emptyList(),
-    val filteredCurrencies: List<CurrencyInfo> = emptyList(),
-    val filteredCryptos: List<CurrencyInfo> = emptyList(),
-    val filteredFiats: List<CurrencyInfo> = emptyList(),
     val searchQuery: String = "",
     val isLoading: Boolean = false
 )
 
 @HiltViewModel
 class CurrencyViewModel @Inject constructor(
-    private val getAllCryptosUseCase: GetAllCryptosUseCase,
-    private val getAllFiatsUseCase: GetAllFiatsUseCase
+    private val cryptoRepository: CryptoRepository,
+    private val fiatRepository: FiatRepository,
+    private val combinedCurrencyRepository: CombinedCurrencyRepository
 ) : ViewModel() {
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
     private val _uiState = MutableStateFlow(CurrencyUiState())
     val uiState: StateFlow<CurrencyUiState> = _uiState.asStateFlow()
 
-    init {
-        loadCurrencies()
-    }
-
-    private fun loadCurrencies() {
-        viewModelScope.launch {
-            combine(
-                getAllCryptosUseCase(),
-                getAllFiatsUseCase()
-            ) { cryptos, fiats ->
-                val allCurrencies = cryptos + fiats
-                val query = _uiState.value.searchQuery
-                _uiState.value = _uiState.value.copy(
-                    cryptos = cryptos,
-                    fiats = fiats,
-                    currencies = allCurrencies,
-                    filteredCurrencies = filterCurrencies(allCurrencies, query),
-                    filteredCryptos = filterCurrencies(cryptos, query),
-                    filteredFiats = filterCurrencies(fiats, query),
-                    isLoading = false
-                )
-            }.collect {}
+    /**
+     * Flow of paginated cryptos.
+     * Automatically updates when search query changes.
+     */
+    val cryptosPaged: Flow<PagingData<CurrencyInfo>> = _searchQuery
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                cryptoRepository.getAllCryptosPaged()
+            } else {
+                cryptoRepository.searchCryptosPaged(query)
+            }
         }
-    }
-
-    fun updateSearchQuery(query: String) {
-        val currentState = _uiState.value
-        _uiState.value = currentState.copy(
-            searchQuery = query,
-            filteredCurrencies = filterCurrencies(currentState.currencies, query),
-            filteredCryptos = filterCurrencies(currentState.cryptos, query),
-            filteredFiats = filterCurrencies(currentState.fiats, query)
-        )
-    }
+        .cachedIn(viewModelScope)
 
     /**
-     * Filters currencies based on search query with improved matching rules.
-     * 
-     * Matching rules:
-     * 1. Currency name starts with the search term
-     * 2. Currency name contains a space-prefixed partial match
-     * 3. Currency symbol starts with the search term
+     * Flow of paginated fiats.
+     * Automatically updates when search query changes.
      */
-    private fun filterCurrencies(
-        currencies: List<CurrencyInfo>,
-        query: String
-    ): List<CurrencyInfo> {
-        if (query.isBlank()) {
-            return currencies
+    val fiatsPaged: Flow<PagingData<CurrencyInfo>> = _searchQuery
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                fiatRepository.getAllFiatsPaged()
+            } else {
+                fiatRepository.searchFiatsPaged(query)
+            }
         }
+        .cachedIn(viewModelScope)
 
-        val searchQuery = query.lowercase().trim()
-        return currencies.filter { currency ->
-            val nameLower = currency.name.lowercase()
-            val symbolLower = currency.symbol.lowercase()
-
-            // Rule 1: Currency name starts with the search term
-            nameLower.startsWith(searchQuery) ||
-            // Rule 2: Currency name contains a space-prefixed partial match
-            nameLower.contains(" $searchQuery") ||
-            // Rule 3: Currency symbol starts with the search term
-            symbolLower.startsWith(searchQuery)
+    /**
+     * Flow of paginated combined currencies (both cryptos and fiats).
+     * Automatically updates when search query changes.
+     */
+    val combinedCurrenciesPaged: Flow<PagingData<CurrencyInfo>> = _searchQuery
+        .flatMapLatest { query ->
+            if (query.isBlank()) {
+                combinedCurrencyRepository.getAllCombinedCurrenciesPaged()
+            } else {
+                combinedCurrencyRepository.searchCombinedCurrenciesPaged(query)
+            }
         }
+        .cachedIn(viewModelScope)
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+        _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun clearSearchQuery() {
+        _searchQuery.value = ""
+        _uiState.value = _uiState.value.copy(searchQuery = "")
     }
 }

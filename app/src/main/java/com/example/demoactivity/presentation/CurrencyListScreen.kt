@@ -36,20 +36,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.example.demoactivity.R
-import com.example.demoactivity.data.paging.CurrencyPagingSource
 import com.example.demoactivity.domain.model.CurrencyInfo
-
-private const val ITEMS_PER_PAGE = 20
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun CurrencyListScreen(
-    filteredCurrencies: List<CurrencyInfo>,
+    pagingDataFlow: Flow<PagingData<CurrencyInfo>>,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     onBack: () -> Unit = {},
@@ -57,15 +55,7 @@ fun CurrencyListScreen(
 ) {
     var isSearchFocused by remember { mutableStateOf(false) }
 
-    // Create PagingData from filtered items
-    val pagingFlow = remember(filteredCurrencies) {
-        Pager(
-            config = PagingConfig(pageSize = ITEMS_PER_PAGE, enablePlaceholders = false),
-            pagingSourceFactory = { CurrencyPagingSource(filteredCurrencies) }
-        ).flow
-    }
-    
-    val pagingItems = pagingFlow.collectAsLazyPagingItems()
+    val pagingItems = pagingDataFlow.collectAsLazyPagingItems()
 
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
         Column(
@@ -136,7 +126,7 @@ fun CurrencyListScreen(
                         CircularProgressIndicator()
                     }
                 }
-                filteredCurrencies.isEmpty() -> {
+                pagingItems.itemCount == 0 -> {
                     // Empty state
                     Box(
                         modifier = Modifier

@@ -1,5 +1,9 @@
 package com.example.demoactivity.data.repository
 
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.map
 import com.example.demoactivity.data.local.FiatDao
 import com.example.demoactivity.data.local.toFiatEntity
 import com.example.demoactivity.domain.model.CurrencyInfo
@@ -18,8 +22,28 @@ class FiatRepositoryImpl @Inject constructor(
     }
 
     override fun searchFiats(query: String): Flow<List<CurrencyInfo>> {
-        return fiatDao.searchFiats(query).map { entities ->
+        val trimmedQuery = query.trim().replace(Regex("\\s+"), " ")
+        return fiatDao.searchFiats(trimmedQuery).map { entities ->
             entities.map { it.toDomain() }
+        }
+    }
+
+    override fun getAllFiatsPaged(): Flow<PagingData<CurrencyInfo>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { fiatDao.getAllFiatsPaged() }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
+        }
+    }
+
+    override fun searchFiatsPaged(query: String): Flow<PagingData<CurrencyInfo>> {
+        val trimmedQuery = query.trim().replace(Regex("\\s+"), " ")
+        return Pager(
+            config = PagingConfig(pageSize = 20, enablePlaceholders = false),
+            pagingSourceFactory = { fiatDao.searchFiatsPaged(trimmedQuery) }
+        ).flow.map { pagingData ->
+            pagingData.map { it.toDomain() }
         }
     }
 
